@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Добро пожаловать!{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class = 'justify-content-center form-group form-container'>
+        {% for ticket in tickets %}
+        <div class="imput-comb">
+            {% if g.user.position=='admin' %}
+            <h3>Автор:</h3>
+                <p><a href={{ url_for('profile.index', id=ticket.user_id) }}>{{ ticket.username }}</a></p>
+            {% endif %}
+            <h3>Тема: </h3>
+            <p>{{ ticket.title }}</p>
+        </div>
+        <div class="imput-comb">
+            <h3>Детали:</h3>
+            <p>{{ ticket.description }}</p>
+        </div>
+
+            <div class="imput-comb">
+        {% if g.user.position=='admin'%}
+            {%  if ticket.status==1%}
+                <h3>Ответ: </h3>
+                <form method="POST" action="{{ url_for('tickets.answer') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="id" value="{{ ticket.id }}">
+                    <textarea class = "form-control" name="answer">{{ ticket.answer }}</textarea>
+                    <button type='submit' class="btn btn-dark bg-black">Сохранить</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{{ url_for('tickets.answer') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="id" value="{{ ticket.id }}">
+                    <textarea class = "form-control" name="answer"></textarea>
+                    <button type='submit' class="btn btn-dark bg-black">Ответить</button>
+                </form>
+            {% endif %}
+        {% else %}
+            {%  if ticket.status==1%}
+                <h3>Ответ: </h3>
+                <p>{{ ticket.answer }}</p>
+            {% else %}
+
+                <p>Ожидайте ответ...</p>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

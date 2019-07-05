@@ -1,0 +1,16 @@
+config.py
+solarenv/
+.vscode/
+*.pyc
+__pycache__/
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+dist/
+build/
+*.egg-info/
+*.sqlite3

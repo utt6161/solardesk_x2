@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Users{% endblock %}
+{% block content %}
+    {#<div class="imput-comb">#}
+    {#    <a href="{{ url_for('tickets.submit') }}" class="btn btn-dark bg-black">Поиск</a>#}
+    {#</div>#}
+    <form action="{{ url_for('admin.search') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Поиск по</label>
+                <select name="mode" class="custom-select" id="inputGroupSelect01">
+                    <option selected value="l">логину</option>
+                    <option value="e">email</option>
+                    <option value="t">телефону</option>
+                    <option value="f">ФИО</option>
+                    <option value="p">фирме/должности</option>
+                    <option value="a">Активности</option>
+                </select>
+            </div>
+            <input type="text" name="search" class="form-control"
+                   aria-label="Text input with segmented select and label">
+            <button type="submit" class="btn btn-outline-secondary">Найти</button>
+        </div>
+    </form>
+    {% if search.mode %}
+        <div class="text-center">
+            <h3>Результаты по запросу: "{{ search.body }}"</h3>
+        </div>
+    {% endif %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Логин</th>
+            <th scope="col">Email</th>
+            <th scope="col">Телефон</th>
+            <th scope="col">ФИО</th>
+            <th scope="col">Фирма/Должность</th>
+            <th scope="col">Верифицирован</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for user in users.items%}
+            <tr class="align-items-center">
+                <td>{{ user.id }}</td>
+                <td><a href={{ url_for('profile.index', id=user.id) }}>{{ user.username }}</a></td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.phone_number }}</td>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.post }}</td>
+                <td>
+
+                    {% if user.active == 1 %}
+                        ✔
+                    {% else %}
+                        <form method="POST" action="{{ url_for('admin.activate') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <input type="hidden" name="from" value="admin.users">
+                            <input type="hidden" name="userid" value="{{ user.id }}">
+                            <button class="btn btn-sm btn-link" type="submit">Активировать</button>
+                        </form>
+                    {% endif %}
+
+
+                </td>
+                <td>
+                    <form action='{{ url_for('profile.edit_user', id=user.id) }}' method="get">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button class="btn bg-black edit-icon" type="submit"><i class="icon-edit"></i></button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8"><em>Пользователей не найдено</em></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block pagination %}
+    <div class="text-center">
+        {% if users.has_prev %}
+            <a class="btn btn-dark bg-black" href="{{ url_for('admin.users', page = users.prev_num) }}">
+                <i class="icon-double-angle-left icon-2x"></i>
+            </a>
+        {% else %}
+
+        {% endif %}
+        {% if users.has_next %}
+            <a class="btn btn-dark bg-black" href="{{ url_for('admin.users', page = users.next_num) }}">
+                <i class="icon-double-angle-right icon-2x"></i>
+            </a>
+        {% else %}
+
+        {% endif %}
+    </div>
+{% endblock %}

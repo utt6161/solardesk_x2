@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Submit{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="form-group form-container">
+        <h3>Опишите вашу проблему: </h3>
+        <form method="POST" action="{{ url_for('tickets.submit') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="imput-comb">
+                <label for="title">Тема заявки</label>
+                <input class = 'form-control' id='title' name="title" placeholder="Что-нибудь обобщающее" required>
+            </div>
+            <div class="imput-comb">
+                <label for="exampleFormControlTextarea1">Детали</label>
+                <textarea required placeholder="Чем больше деталей будет предоставлено, тем проще будет всем нам" name="description" class="form-control" id="exampleFormControlTextarea1" rows="7" style="resize: none;"></textarea>
+            </div>
+            <button type='submit' class="btn btn-dark bg-black">Отправить</button>
+        </form>
+    </div>
+{% endblock %}

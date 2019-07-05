@@ -1,0 +1,316 @@
+{% extends 'base_empty.html' %}
+
+{% block title %}
+    Добро пожаловать!
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href={{ url_for('static', filename='index_auth.css') }}>
+{% endblock %}
+
+{% block content %}
+    <div class="row h-100 justify-content-center align-items-center" id = "app">
+
+        <div class="center-block">
+            <div class="text-center padding-bottom-5">
+                <p class="a-name">ООО «СКА-Сфера»</p>
+                <p class="a-name a-name-small">Web Service Desk</p>
+            </div>
+
+            <!-- error notifications -->
+            {% if get_flashed_messages() %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <strong>Сообщение системы:</strong>
+                    {% for message in get_flashed_messages() %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+            {% endif %}
+
+            <!-- Nav Tabs -->
+            <ul class="nav" id="myTab" role="tablist">
+                <li class="nav-item"><a class="nav-link {{ tab.li_div_login }}" id="login-tab" data-toggle="tab" href="#log"
+                                        role="tab"
+                                        aria-selected="{{ tab.aria_selecter_login }}">Вход</a></li>
+
+                <li class="nav-item"><a class="nav-link {{ tab.li_div_register }}" id="reg-tab" data-toggle="tab" href="#reg"
+                                        role="tab"
+                                        aria-selected="{{ tab.aria_selecter_register }}">Регистрация</a></li>
+            </ul>
+
+            <!-- Login Register Inside -->
+            <div class="tab-content" id="myTabContent">
+
+                <!-- Login -->
+                <div class="tab-pane fade {{ tab.li_div_login }}" id="log" role="tabpanel" aria-labelledby="login-tab">
+                    <div class="height-100 d-flex justify-content-center align-items-center padding-25">
+                        <form method="POST" id = "login_form" name = "login_form">
+                            {{ login_form.csrf_token }}
+                           
+                            <!-- Name -->
+                            <div>
+                                <div class="form-group">
+                                    <label for="username" class="control-label"> Имя пользователя
+                                        <input id="username" name="username" placeholder="john_doe" type="text"
+                                               class="form-control" required>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- LAST NAME -->
+                            <div>
+                                <div class="form-group">
+                                    <label for="password" class="control-label"> Пароль
+                                        <input id="password" name="password" type="password" class="form-control" required>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="form-group text-center">
+                                    <!-- LOGIN -->
+                                    <button form = "login_form" type="submit" name = "btn" value="log" class="btn btn-dark bg-black" >Войти</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="form-group d-flex justify-content-center">
+                                    <a href="#" class="pass-forgot">Забыли пароль?</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Register -->
+                <div class="tab-pane fade {{ tab.li_div_register }}" id="reg" role="tabpanel" aria-labelledby="reg-tab">
+                    <div class="d-flex justify-content-center align-items-center padding-25">
+                        <form v-on:submit="submit" method="POST" id = "register_form" name = "register_form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <!-- FULL NAME -->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="last_name">Фамилия</label>
+                                        <input id="last_name" name="last_name"
+                                               v-model.lazy="$v.last_name.$model" :class="status($v.last_name)"
+                                               placeholder="" type="text"
+                                               aria-describedby="firstNameHelpBlock"
+                                               class="form-control here">
+
+                                        <span class = "help is-danger" v-if="!$v.last_name.required && $v.last_name.$dirty">
+                                            Поле обязательно к заполнению
+                                        </span>
+                                        <span class = "help is-danger" v-else-if="!$v.last_name.minLength">
+                                            Минимально допустимое число символов: {{ "{{ $v.last_name.$params.minLength.min }}" }}
+                                        </span>
+                                        <span class = "help is-danger" v-else-if="!$v.last_name.maxLength">
+                                            Максимально допустимое число символов: {{ "{{ $v.last_name.$params.maxLength.max }}" }}
+                                        </span>
+
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="first_name">Имя</label>
+                                        <input id="first_name"
+                                               v-model.lazy="$v.first_name.$model" :class="status($v.first_name)"
+                                               name="first_name" placeholder="" type="text"
+                                               aria-describedby="lastNameHelpBlock"
+                                               class="form-control here">
+                                        <span class = "help is-danger" v-if="!$v.first_name.required && $v.first_name.$dirty">
+                                        Поле обязательно к заполнению
+                                        </span>
+                                        <span class = "help is-danger" v-else-if="!$v.first_name.minLength">
+                                            Минимально допустимое число символов: {{ "{{ $v.first_name.$params.minLength.min }}" }}
+                                        </span>
+                                        <span class = "help is-danger" v-else-if="!$v.first_name.maxLength">
+                                            Максимально допустимое число символов: {{ "{{ $v.first_name.$params.maxLength.max }}" }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="middle_name">Отчество</label>
+                                        <input id="middle_name" name="middle_name" placeholder="(необязательно)" type="text"
+                                               aria-describedby="lastNameHelpBlock"
+                                               class="form-control here">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LOGIN -->
+                            <div>
+                                <div class="form-group">
+
+                                    {% if register_form.username.errors %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            {% for error in register_form.username.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                    {% endif %}
+                                    <label for="username">Имя пользователя</label>
+                                    <input id="username"
+                                           v-model.lazy="$v.username.$model" :class="status($v.username)"
+                                           name="username" placeholder="victor44rus" type="text"
+                                           aria-describedby="usernameHelpBlock"
+                                           class="form-control here" >
+
+                                    <span class = "help is-danger" v-if="!$v.username.required && $v.username.$dirty">
+                                        Поле обязательно к заполнению
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.username.minLength">
+                                        Минимально допустимое число символов: {{ "{{ $v.username.$params.minLength.min }}" }}
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.username.maxLength">
+                                        Максимально допустимое число символов: {{ "{{ $v.username.$params.maxLength.max }}" }}
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.username.alphaNum">
+                                        Имя пользователя может состоят только из цифр и латинских букв
+                                    </span>
+
+
+                                </div>
+                            </div>
+
+                            <!-- PASS -->
+                            <div>
+                                <div class="form-group">
+
+                                    {% if register_form.password.errors %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            {% for error in register_form.password.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                    {% endif %}
+
+                                    <label for="password">Пароль</label>
+                                    <input id="password"
+                                           v-model="$v.password.$model" :class="status($v.password)"
+                                           name="password" type="password"
+                                           aria-describedby="passwordHelpBlock"
+                                           class="form-control here">
+                                    <span class = "help is-danger" v-if="!$v.password.required && $v.password.$dirty">
+                                        Поле обязательно к заполнению
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.password.minLength">
+                                        Минимально допустимое число символов: {{ "{{ $v.password.$params.minLength.min }}" }}
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.password.maxLength">
+                                        Максимально допустимое число символов: {{ "{{ $v.password.$params.maxLength.max }}" }}
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.password.strongPass && $v.password.$dirty">
+                                        Пароль как минимум должен содержать: <br>
+                                        Одну цифру <br>
+                                        Одну прописную латинскую букву <br>
+                                        Одну заглавную латинскую букву <br>
+                                        Один спец. символ( @ # $ % ^ & + = ).
+                                    </span>
+
+                                </div>
+                            </div>
+
+                            <!-- TEL -->
+                            <div>
+                                <div class="form-group">
+
+                                    {% if register_form.phone_number.errors %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            {% for error in register_form.phone_number.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                    {% endif %}
+
+                                    <label for="phone_number">Номер телефона</label>
+                                    <input id="phone_number"
+                                           v-model="$v.phone_number.$model" :class="status($v.phone_number)"
+                                           name="phone_number" placeholder="+79876543212" type="tel"
+                                           aria-describedby="phone_numberHelpBlock"
+                                           class="form-control here">
+                                    <span class = "help is-danger" v-if="!$v.phone_number.required && $v.phone_number.$dirty">
+                                        Поле обязательно к заполнению
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.phone_number.phone && $v.phone_number.$dirty">
+                                        Введен некорректный номер телефона
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- EMAIL -->
+                            <div>
+                                <div class="form-group">
+
+                                    {% if register_form.email.errors %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            {% for error in register_form.email.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                    {% endif %}
+
+                                    <label for="email">E-mail адрес</label>
+                                    <input id="email" name="email"
+                                           v-model.lazy="$v.email.$model" :class="status($v.email)"
+                                           placeholder="proverka@yandex.ru" type="email"
+                                           aria-describedby="emailHelpBlock"
+                                           class="form-control here">
+                                    <span class = "help is-danger" v-if="!$v.email.required && $v.email.$dirty">
+                                        Поле обязательно к заполнению
+                                    </span>
+                                    <span class = "help is-danger" v-else-if="!$v.email.email && $v.email.$dirty">
+                                        Введен некорректный email адрес
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- REG BUTTON -->
+                            <div>
+                                <div class="form-group text-center">
+                                    <button form = "register_form" type="submit" name = "btn" value="reg" class="btn btn-dark bg-black">Зарегистрироваться</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+            integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+            integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+            crossorigin="anonymous"></script>
+{#    <script src="https://unpkg.com/vee-validate@latest"></script>#}
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+    <script src={{ url_for('static', filename='vuelidate.min.js') }}></script>
+    <script src={{ url_for('static', filename='validators.min.js') }}></script>
+    <script src={{ url_for('static', filename='validation.js') }}></script>
+{% endblock %}

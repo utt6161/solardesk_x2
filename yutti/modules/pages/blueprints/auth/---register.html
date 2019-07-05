@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Register{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-sm-12 mx-auto">
+            <form method="POST">
+                {{ form.csrf_token }}
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="last_name">Фамилия</label>
+                            <input id="last_name" name="last_name" placeholder="Иванов" type="text"
+                                   aria-describedby="firstNameHelpBlock"
+                                   required="required" class="form-control here">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="first_name">Имя</label>
+                            <input id="first_name" name="first_name" placeholder="Иван" type="text"
+                                   aria-describedby="lastNameHelpBlock"
+                                   required="required" class="form-control here">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="middle_name">Отчество</label>
+                            <input id="middle_name" name="middle_name" placeholder="Иванович" type="text"
+                                   aria-describedby="lastNameHelpBlock"
+                                   required="required" class="form-control here">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="username">Имя пользователя</label>
+                    <input id="username" name="username" placeholder="john_doe" type="text"
+                           aria-describedby="usernameHelpBlock"
+                           required="required" class="form-control here">
+                    <span id="usernameHelpBlock" class="form-text text-muted">Выберите для себя имя пользователя, которое будете
+          использовать для входа на сайт</span>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input id="password" name="password" type="password" aria-describedby="passwordHelpBlock"
+                           required="required"
+                           class="form-control here">
+                    <span id="passwordHelpBlock" class="form-text text-muted">Придумайте такой пароль, который не будет очевиден</span>
+                </div>
+                <div class="form-group">
+                    <label for="phone_number">Номер телефона</label>
+                    <input id="phone_number" name="phone_number" placeholder="8987654321" type="text"
+                           aria-describedby="phone_numberHelpBlock"
+                           required="required" class="form-control here">
+                    <span id="phone_numberHelpBlock" class="form-text text-muted">По данному номеру телефона наши сотрудники будут
+          связываться с вами</span>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail адрес</label>
+                    <input id="email" name="email" placeholder="proverka@yandex.ru" type="email"
+                           aria-describedby="emailHelpBlock"
+                           required="required" class="form-control here">
+                    <span id="emailHelpBlock" class="form-text text-muted">Используется для уведомлений о состоянии заявки</span>
+                </div>
+                <div class="form-group">
+                    <button name="submit" type="submit" class="btn btn-primary">Регистрация</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

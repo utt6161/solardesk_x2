@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block content %}
+    <div class='justify-content-center form-group form-container'>
+        {% for u in user %}
+            <form method="post" action="{{ url_for('profile.edit_user',id=id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <h4>{{ u.username }}: "{{ u.full_name }}"</h4>
+                <p>id: {{ u.id }}</p>
+                <h5>Контакты: </h5>
+                <div class="imput-comb">
+                    <span>Фирма/должность</span>
+                    <input class='form-control' type='text' value='{{ u.post }}' name="post"/>
+                </div>
+                <div class="imput-comb">
+                    <span>Номер телефона</span>
+                    <input class='form-control' type='text' value='{{ u.phone_number }}' name="phone_number"/>
+                </div>
+                <div class="imput-comb">
+                    <span>Email</span>
+                    <input class='form-control' type='text' value='{{ u.email }}' name="email"/>
+                </div>
+                <button class="btn btn-dark">Обновить</button>
+            </form>
+        {% endfor %}
+    </div>
+{% endblock %}

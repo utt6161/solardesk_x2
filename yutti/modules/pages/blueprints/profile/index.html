@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block content %}
+     <div class = 'justify-content-center form-group'>
+        {% for u in user %}
+        <h4>{{ u.username }}: "{{ u.full_name }}"</h4>
+        <p>id: {{ u.id }}</p>
+        <h5>Контакты: </h5>
+        <p>{{ u.phone_number }}</p>
+        <p>{{ u.email }}</p>
+        {% endfor %}
+    </div>
+{% endblock %}

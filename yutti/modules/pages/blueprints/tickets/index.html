@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Добро пожаловать!{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    {#    {% if not g.user %}#}
+    {#        <p>#}
+    {#            Это сайт сервисных заявок ООО "Моя Оборона". <a href="{{ url_for('auth.login') }}">Войдите</a>, чтобы#}
+    {#            продолжить!#}
+    {#        </p>#}
+    {#    {% else %}#}
+    {#        <p>#}
+    {#            Кажется, все в порядке! Вы успешно вошли в систему.#}
+    {#        </p>#}
+    {#        <p>#}
+    {#            <a href="#" class="btn btn-success">Мои заявки</a> / <a href="{{ url_for('tickets.submit') }}"#}
+    {#                                                                    class="btn btn-primary">Оставить заявку</a>#}
+    {#        </p>#}
+    {#        {% if g.user.position == 'admin' %}#}
+    {#            <p>#}
+    {#                Вы являетесь администратором системы, Ваши функции администратора:#}
+    {#            </p>#}
+    {#            <p>#}
+    {#                <a href="#" class="btn btn-success">Настройки системы</a> / <a href="#" class="btn btn-primary">Пользователи</a>#}
+    {#            </p>#}
+    {#            <p>#}
+    {#                На данный момент ожидают активации {{ inactive_users|length }} пользователь#}
+    {#            </p>#}
+    {#            <ul>#}
+    {#                {% for user in inactive_users %}#}
+    {#                    <li>#}
+    {#                        {{ user.username|e }}#}
+    {#                        <form method="POST" action="{{ url_for('admin.activate') }}">#}
+    {#                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
+    {#                            <input type="hidden" name="from" value="tickets.index">#}
+    {#                            <input type="hidden" name="userid" value="{{ user.id|e }}">#}
+    {#                            <button class="btn btn-sm btn-link" type="submit">Активировать</button>#}
+    {#                        </form>#}
+    {#                    </li>#}
+    {#                {% else %}#}
+    {#                    <li><em>Нет неактивных пользователей! Хорошая работа!</em></li>#}
+    {#                {% endfor %}#}
+    {#            </ul>#}
+    {#        {% endif %}#}
+    {#    {% endif %}#}
+
+    {#{% if g.user.position=='admin' %}#}
+    {##}
+    {#    <div class="navigation">#}
+    {#        <ul class="nav nav-tabs justify-content-center">#}
+    {#            <li class="nav-item ">#}
+    {#                <a class="nav-link {{ tab.theme }} dark small-font" href="{{ url_for('admin.request_theme_search') }}">Тема</a>#}
+    {#            </li>#}
+    {##}
+    {#            <li class="nav-item ">#}
+    {#                <a class="nav-link {{ tab.description }} dark small-font" href="">Описание</a>#}
+    {#            </li>#}
+    {##}
+    {#            <li class="nav-item ">#}
+    {#                <a class="nav-link {{ tab.username }} dark small-font" href="">Имя пользователя</a>#}
+    {#            </li>#}
+    {##}
+    {#            <li class="nav-item ">#}
+    {#                <a class="nav-link {{ tab.status }} dark small-font" href="">Статус</a>#}
+    {#            </li>#}
+    {##}
+    {#        </ul>#}
+    {#    </div>#}
+
+    {#{% endif %}#}
+
+    <div class="imput-comb text-center">
+        <a href="{{ url_for('tickets.submit') }}" class="btn btn-dark bg-black">Создать заявку</a>
+    </div>
+
+    {% if g.user.position=='admin' %}
+
+        <form action="{{ url_for('tickets.search') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Поиск по</label>
+                    <select name="mode" class="custom-select" id="inputGroupSelect01">
+                        <option selected value="t">теме</option>
+                        <option value="d">описанию</option>
+                        <option value="n">имени</option>
+                        <option value="s">статусу</option>
+                    </select>
+                </div>
+                <input type="text" name="search" class="form-control" aria-label="Text input with segmented select and label">
+                <button type="submit" class="btn btn-outline-secondary">Найти</button>
+            </div>
+        </form>
+
+    {% else %}
+
+        <form action="{{ url_for('tickets.search') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Поиск по</label>
+                    <select name="mode" class="custom-select" id="inputGroupSelect01">
+                        <option selected value="t">теме</option>
+                        <option value="d">описанию</option>
+                        <option value="s">статусу</option>
+                    </select>
+                </div>
+                <input name="search" type="text" class="form-control" aria-label="Text input with segmented select and label">
+                <button type="submit" class="btn btn-outline-secondary">Найти</button>
+            </div>
+        </form>
+
+    {% endif %}
+
+
+    {% if search.mode %}
+        <div class="text-center">
+            <h3>Результаты по запросу: "{{ search.body }}"</h3>
+        </div>
+    {% endif %}
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Тема</th>
+
+            {% if g.user.position=='admin' %}
+                <th scope="col">Имя пользователя</th>
+            {% else %}
+                <th scope="col">Описание</th>
+            {% endif %}
+
+
+            <th scope="col">Статус</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ticket in tickets.items %}
+            <tr>
+                <td>
+                    <a href={{ url_for('tickets.ticket', id=ticket.id) }}>{{ ticket.title[:25]+"..." if len(ticket.title)>25 else ticket.title }}</a>
+                </td>
+
+                {% if g.user.position=='admin' %}
+                    <td>{{ ticket.username }}</td>
+                {% else %}
+                    <td>{{ ticket.description[:50]+"..." if len(ticket.description)>50 else ticket.description }}</td>
+                {% endif %}
+
+                {% if ticket.status == 0 %}
+                    <td> Ожидает ответа</td>
+                {% else %}
+                    <td> ✔ есть ответ</td>
+                {% endif %}
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5"><em>Заявок не найдено</em></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block pagination %}
+    <div class="text-center">
+        {% if tickets.has_prev %}
+            <a class="btn btn-dark bg-black" href="{{ url_for('tickets.index', page = tickets.prev_num) }}">
+                <i class="icon-double-angle-left icon-2x"></i>
+            </a>
+        {% else %}
+
+        {% endif %}
+        {% if tickets.has_next %}
+            <a class="btn btn-dark bg-black" href="{{ url_for('tickets.index', page = tickets.next_num) }}">
+                <i class="icon-double-angle-right icon-2x"></i>
+            </a>
+        {% else %}
+
+        {% endif %}
+    </div>
+{% endblock %}
