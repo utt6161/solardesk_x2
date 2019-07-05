@@ -10,8 +10,6 @@ from yutti.modules.pages.blueprints.tickets import bp as tickets_blueprint
 
 # Initialize with given config:
 app = Yutti(__name__)
-
-
 # Register all application Blueprints:
 # ------------------------------------
 app.register_blueprint(auth_blueprint)
